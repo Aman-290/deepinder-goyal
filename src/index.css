@@ -195,3 +195,37 @@ body {
 .warm-section .hud-text {
   color: var(--warm-muted);
 }
+
+/* Magnetic tilt card */
+.magnetic-card {
+  transform-style: preserve-3d;
+  perspective: 800px;
+  transition: transform 0.1s ease-out;
+}
+
+.magnetic-card .card-inner {
+  transition: transform 0.3s ease-out;
+}
+
+/* Cursor glow effect on cards */
+.cursor-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.cursor-glow::before {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(226, 55, 68, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.cursor-glow:hover::before {
+  opacity: 1;
+}
