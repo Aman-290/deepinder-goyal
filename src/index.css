@@ -151,3 +151,47 @@ body {
   background: rgba(138, 43, 226, 0.4);
   box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
 }
+
+/* Confetti burst */
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.confetti-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  top: 0;
+  animation: confetti-fall 2s ease-in forwards;
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Glitch effect */
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(3px, -3px); }
+  60% { transform: translate(-2px, -2px); }
+  80% { transform: translate(2px, 2px); }
+  100% { transform: translate(0); }
+}
+
+.glitch-active {
+  animation: glitch 0.3s ease-in-out 3;
+}
+
+/* Warm documentary palette */
+.warm-section {
+  --warm-bg: #1a1410;
+  --warm-text: #e8ddd0;
+  --warm-muted: #9c8b7a;
+  --warm-accent: #c97a3a;
+  background: var(--warm-bg);
+  color: var(--warm-text);
+}
+
+.warm-section .hud-text {
+  color: var(--warm-muted);
+}

@@ -14,23 +14,42 @@ export default function DeliveryMatrixGame() {
   const [score, setScore] = useState(0);
   const [friction, setFriction] = useState(0);
   const [orders, setOrders] = useState<Order[]>([]);
-  
+  const [displayTime, setDisplayTime] = useState('10:00');
+  const [isGlitching, setIsGlitching] = useState(false);
+
   const requestRef = useRef<number>(0);
   const lastTimeRef = useRef<number>(0);
   const spawnTimerRef = useRef<number>(0);
+  const gameElapsedRef = useRef<number>(0); // real ms elapsed during game
   
   // Game parameters
   const baseSpawnRate = 1200; // ms between spawns initially
   const minSpawnRate = 300; // fastest spawn rate
   const baseDecayRate = 15; // units per second
   
+  const spawnConfetti = () => {
+    const colors = ['#E23744', '#F8CB46', '#8A2BE2', '#2E8B57'];
+    for (let i = 0; i < 30; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-particle';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      el.style.animationDelay = Math.random() * 0.5 + 's';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    }
+  };
+
   const startGame = () => {
     setGameState('playing');
     setScore(0);
     setFriction(0);
     setOrders([]);
+    setDisplayTime('10:00');
+    setIsGlitching(false);
     lastTimeRef.current = performance.now();
     spawnTimerRef.current = 0;
+    gameElapsedRef.current = 0;
     requestRef.current = requestAnimationFrame(gameLoop);
   };
 
@@ -84,13 +103,22 @@ export default function DeliveryMatrixGame() {
   
   const tick = useCallback((time: number) => {
     if (gameState !== 'playing') return;
-    
+
     const deltaTime = (time - lastTimeRef.current) / 1000;
     lastTimeRef.current = time;
-    
+
+    // Update elapsed time and countdown display (each real second = ~6 display seconds)
+    gameElapsedRef.current += deltaTime * 1000;
+    const displaySecondsElapsed = (gameElapsedRef.current / 1000) * 6;
+    const totalDisplaySeconds = 600; // 10:00 in seconds
+    const remainingDisplay = Math.max(0, totalDisplaySeconds - displaySecondsElapsed);
+    const mins = Math.floor(remainingDisplay / 60);
+    const secs = Math.floor(remainingDisplay % 60);
+    setDisplayTime(`${mins}:${secs.toString().padStart(2, '0')}`);
+
     const currentState = stateRef.current;
     let newFriction = currentState.friction;
-    
+
     // Decay
     const decayMultiplier = 1 + (currentState.score * 0.05);
     const nextOrders = currentState.orders.map(o => ({
@@ -103,17 +131,17 @@ export default function DeliveryMatrixGame() {
       }
       return true;
     });
-    
+
     // Spawn
     spawnTimerRef.current += deltaTime * 1000;
     const currentSpawnRate = Math.max(minSpawnRate, baseSpawnRate - (currentState.score * 30));
-    
+
     if (spawnTimerRef.current >= currentSpawnRate && nextOrders.length < 20) {
       spawnTimerRef.current = 0;
       const availableCells = Array.from({length: 36}, (_, i) => i).filter(
         i => !nextOrders.some(o => o.cellId === i)
       );
-      
+
       if (availableCells.length > 0) {
         const randomCell = availableCells[Math.floor(Math.random() * availableCells.length)];
         nextOrders.push({
@@ -124,18 +152,25 @@ export default function DeliveryMatrixGame() {
         });
       }
     }
-    
+
     // Check Game Over
     if (newFriction >= 100) {
       newFriction = 100;
       setGameState('gameover');
+      // Trigger glitch effect on failure
+      setIsGlitching(true);
+      setTimeout(() => setIsGlitching(false), 1000);
+      // Spawn confetti if score is decent (10+ orders)
+      if (currentState.score >= 10) {
+        spawnConfetti();
+      }
     }
-    
+
     // Update Refs & State
     stateRef.current = { ...currentState, friction: newFriction, orders: nextOrders };
     setFriction(newFriction);
     setOrders(nextOrders);
-    
+
     if (newFriction < 100) {
       requestRef.current = requestAnimationFrame(tick);
     }
@@ -181,7 +216,7 @@ export default function DeliveryMatrixGame() {
   };
 
   return (
-    <div className="py-24 md:py-40 bg-bg relative border-b border-line overflow-hidden">
+    <div className={`py-24 md:py-40 bg-bg relative border-b border-line overflow-hidden${isGlitching ? ' glitch-active' : ''}`}>
       {/* Dynamic Background */}
       <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none"></div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] bg-radial-gradient from-blinkit/5 directly-to-transparent opacity-30 pointer-events-none"></div>
@@ -274,8 +309,21 @@ export default function DeliveryMatrixGame() {
               </div>
             </div>
 
+            {/* Countdown Clock */}
+            {gameState === 'playing' && (
+              <div className="relative flex flex-col items-center py-4 border border-blinkit/30 bg-blinkit/5 rounded-lg">
+                <div className="font-mono text-[10px] uppercase tracking-widest text-blinkit/60 mb-1">Time Remaining</div>
+                <div
+                  className="font-display font-bold text-blinkit drop-shadow-[0_0_12px_#F8CB46]"
+                  style={{ fontSize: '3rem', lineHeight: 1 }}
+                >
+                  {displayTime}
+                </div>
+              </div>
+            )}
+
             {gameState === 'idle' && (
-              <button 
+              <button
                 onClick={() => {
                   stateRef.current = { score: 0, friction: 0, orders: [] };
                   startGame();
@@ -287,7 +335,7 @@ export default function DeliveryMatrixGame() {
               </button>
             )}
             {gameState === 'playing' && (
-               <div className="mt-8 text-center border border-blinkit/20 bg-blinkit/5 py-4 font-mono text-xs text-blinkit animate-pulse flex items-center justify-center gap-2 tracking-widest">
+               <div className="mt-4 text-center border border-blinkit/20 bg-blinkit/5 py-4 font-mono text-xs text-blinkit animate-pulse flex items-center justify-center gap-2 tracking-widest">
                  <Activity size={16} /> SYSTEM ACTIVE
                </div>
             )}
