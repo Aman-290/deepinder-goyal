@@ -38,11 +38,9 @@ export default function JourneySection() {
           <div className="space-y-8">
             {/* Image Placeholder 1 */}
             <div className="relative w-full aspect-[4/3] bg-surface border border-line flex items-center justify-center overflow-hidden group">
-              <span className="font-mono text-sm text-ink absolute z-10 px-4 py-2 bg-bg/90 border border-line shadow-2xl">
-                deepinder-early-days.webp
-              </span>
+
               <img 
-                src="deepinder-early-days.webp" 
+                src="deepinder-early-days.png" 
                 alt="Deepinder Early Days" 
                 className="w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500" 
                 onError={(e) => e.currentTarget.style.display = 'none'} 
@@ -52,11 +50,9 @@ export default function JourneySection() {
 
             {/* Image Placeholder 2 */}
             <div className="relative w-3/4 ml-auto aspect-video bg-surface border border-line flex items-center justify-center overflow-hidden group -mt-16 z-20 shadow-2xl">
-              <span className="font-mono text-sm text-ink absolute z-10 px-4 py-2 bg-bg/90 border border-line shadow-2xl">
-                iit-delhi-campus.webp
-              </span>
+
               <img 
-                src="iit-delhi-campus.webp" 
+                src="iit-delhi-campus.png" 
                 alt="IIT Delhi" 
                 className="w-full h-full object-cover opacity-30 group-hover:opacity-50 transition-opacity duration-500" 
                 onError={(e) => e.currentTarget.style.display = 'none'} 

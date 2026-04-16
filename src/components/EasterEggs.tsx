@@ -81,8 +81,12 @@ export default function EasterEggs() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="aspect-video bg-line/20 flex items-center justify-center border border-line relative overflow-hidden">
                   {/* Placeholder for car image */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent"></div>
-                  <span className="text-6xl relative z-10">{activeCar === 'lambo' ? '🏎️' : '🚙'}</span>
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent z-20 pointer-events-none"></div>
+                  {activeCar === 'lambo' ? (
+                    <img src="Huracan.jpg" alt="Huracan Sterrato" className="w-full h-full object-cover relative z-10" />
+                  ) : (
+                    <span className="text-6xl relative z-10">🚙</span>
+                  )}
                 </div>
                 
                 <div className="font-mono text-sm space-y-4">

@@ -180,13 +180,7 @@ export default function HeroSection() {
             style={{ opacity, y }}
             className="text-center px-4 w-full max-w-7xl mx-auto relative"
           >
-            {/* Subtle Portrait Placeholder behind text */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vh] h-[80vh] border border-line/30 bg-surface/20 flex items-center justify-center overflow-hidden -z-10 opacity-20 mix-blend-luminosity">
-              <span className="font-mono text-xs text-muted absolute z-10 px-2 py-1 bg-bg/50 border border-line/50">
-                deepinder-hero-portrait.webp
-              </span>
-              <img src="deepinder-hero-portrait.webp" alt="Deepinder Goyal" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
-            </div>
+
 
             <div className="hud-text text-muted mb-6 text-sm md:text-base border border-line inline-block px-4 py-2 bg-surface/50 backdrop-blur-sm">
               SYSTEMIC ANNIHILATION OF FRICTION

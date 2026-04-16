@@ -9,7 +9,7 @@ const pillars = [
     stat: '24M+',
     label: 'Monthly Active Customers',
     desc: 'The legacy foundational engine, focused on food delivery and restaurant discovery.',
-    image: 'zomato-delivery.webp'
+    image: 'zomato-delivery.png'
   },
   {
     id: 'blinkit',
@@ -18,7 +18,7 @@ const pillars = [
     stat: '<10m',
     label: 'Quick Commerce Delivery',
     desc: 'The undisputed quick-commerce titan. Sub-10-minute delivery redefining retail.',
-    image: 'blinkit-darkstore.webp'
+    image: 'blinkit-darkstore.png'
   },
   {
     id: 'district',
@@ -27,7 +27,7 @@ const pillars = [
     stat: 'LIVE',
     label: 'Experiential Economy',
     desc: 'A highly curated venture specifically focused on the "going-out" and experiential economy.',
-    image: 'district-events.webp'
+    image: 'district-events.png'
   },
   {
     id: 'hyperpure',
@@ -36,7 +36,7 @@ const pillars = [
     stat: '100k+',
     label: 'Restaurant Outlets Supplied',
     desc: 'A robust B2B platform addressing the deeply fragmented and inefficient Indian food supply chain.',
-    image: 'hyperpure-supply.webp'
+    image: 'hyperpure-supply.png'
   }
 ];
 
@@ -117,9 +117,7 @@ export default function EternalConglomerateSection() {
 
                   {/* Image Placeholder */}
                   <div className="relative w-full h-64 bg-bg border border-line flex items-center justify-center overflow-hidden mt-auto">
-                    <span className="font-mono text-sm text-ink absolute z-10 px-4 py-2 bg-surface/90 border border-line">
-                      {activePillar.image}
-                    </span>
+
                     <img 
                       src={activePillar.image} 
                       alt={activePillar.name} 

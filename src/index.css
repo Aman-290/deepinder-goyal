@@ -11,11 +11,19 @@
   --color-district: #8A2BE2;
   --color-hyperpure: #2E8B57;
   
-  --color-bg: #050505;
-  --color-surface: #111111;
-  --color-ink: #FFFFFF;
-  --color-muted: #8E9299;
-  --color-line: #333333;
+  --color-bg: #030303;
+  --color-surface: #0a0a0a;
+  --color-surface-elevated: #141414;
+  --color-ink: #F9FAFB;
+  --color-muted: #9CA3AF;
+  --color-line: #262626;
+  
+  --animate-pulse-slow: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.4; box-shadow: 0 0 40px var(--color-zomato); }
 }
 
 body {
@@ -23,12 +31,19 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-zomato);
+  color: white;
 }
 
 /* Custom scrollbar for the HUD feel */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: var(--color-bg);
@@ -36,6 +51,7 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-line);
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-muted);
@@ -44,8 +60,8 @@ body {
 .grid-bg {
   background-size: 40px 40px;
   background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
 }
 
 .hud-border {
@@ -55,5 +71,33 @@ body {
 .hud-text {
   font-family: var(--font-mono);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
+  font-size: 0.75rem;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(10, 10, 10, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Stunning Gradient Text */
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+}
+
+.text-gradient-zomato {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, #fa709a 0%, #E23744 100%);
+}
+
+.glow-effect {
+  box-shadow: 0 0 30px rgba(226, 55, 68, 0.15);
 }

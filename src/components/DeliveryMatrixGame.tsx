@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Package, AlertTriangle, Crosshair, Box, Activity, ShieldAlert } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -41,22 +42,21 @@ export default function DeliveryMatrixGame() {
   const gameLoop = useCallback((time: number) => {
     if (gameState !== 'playing') return;
 
-    const deltaTime = (time - lastTimeRef.current) / 1000; // in seconds
+    const deltaTime = (time - lastTimeRef.current) / 1000;
     lastTimeRef.current = time;
 
     setOrders(prevOrders => {
       let newFriction = 0;
       
-      // Update existing orders
-      const currentScore = score; // We need a ref for score if we want exact scaling, but let's approximate
-      const decayMultiplier = 1 + (currentScore * 0.05); // Speeds up as score increases
+      const currentScore = score;
+      const decayMultiplier = 1 + (currentScore * 0.05);
       
       const updatedOrders = prevOrders.map(order => ({
         ...order,
         timeLeft: order.timeLeft - (baseDecayRate * decayMultiplier * deltaTime)
       })).filter(order => {
         if (order.timeLeft <= 0) {
-          newFriction += 25; // 4 missed orders = game over
+          newFriction += 25; 
           return false;
         }
         return true;
@@ -75,21 +75,13 @@ export default function DeliveryMatrixGame() {
       return updatedOrders;
     });
 
-    // Handle Spawning
     spawnTimerRef.current += deltaTime * 1000;
-    // Calculate current spawn rate based on score (needs to be accessed via state, but we'll use a ref or just calculate it)
-    // To avoid stale state in requestAnimationFrame, we can use a functional state update or just let the effect re-bind.
-    // Actually, since gameLoop is in useCallback without score dependency, `score` is stale. 
-    // Let's use a ref for the mutable game state to keep the loop clean.
     
     requestRef.current = requestAnimationFrame(gameLoop);
   }, [gameState, score, stopGame]);
 
-  // Re-bind the game loop when score changes so we have fresh state, 
-  // or better yet, use a ref for the entire game state.
   const stateRef = useRef({ score: 0, friction: 0, orders: [] as Order[] });
   
-  // Let's rewrite the loop using stateRef for perfect sync
   const tick = useCallback((time: number) => {
     if (gameState !== 'playing') return;
     
@@ -157,9 +149,24 @@ export default function DeliveryMatrixGame() {
     return () => cancelAnimationFrame(requestRef.current);
   }, [gameState, tick]);
 
-  const handleOrderClick = (id: string) => {
+  const handleOrderClick = (id: string, e: React.MouseEvent) => {
     if (gameState !== 'playing') return;
     
+    // Impact expanding ripple effect
+    const btn = e.currentTarget as HTMLElement;
+    const circle = document.createElement("span");
+    const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+    const radius = diameter / 2;
+
+    circle.style.width = circle.style.height = `${diameter}px`;
+    circle.style.left = `${e.clientX - btn.getBoundingClientRect().left - radius}px`;
+    circle.style.top = `${e.clientY - btn.getBoundingClientRect().top - radius}px`;
+    circle.classList.add("ripple-effect");
+    
+    // Just simple ripple
+    btn.appendChild(circle);
+    setTimeout(() => circle.remove(), 500);
+
     stateRef.current.orders = stateRef.current.orders.filter(o => o.id !== id);
     stateRef.current.score += 1;
     
@@ -174,45 +181,95 @@ export default function DeliveryMatrixGame() {
   };
 
   return (
-    <div className="py-32 bg-surface relative border-b border-line overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-10"></div>
+    <div className="py-24 md:py-40 bg-bg relative border-b border-line overflow-hidden">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 grid-bg opacity-10 pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] bg-radial-gradient from-blinkit/5 directly-to-transparent opacity-30 pointer-events-none"></div>
+
+      <style>{`
+        .bg-radial-gradient { background: radial-gradient(circle, var(--tw-gradient-from) 0%, transparent 60%); }
+        .ripple-effect {
+          position: absolute;
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 500ms linear;
+          background-color: rgba(255, 255, 255, 0.7);
+        }
+        @keyframes ripple {
+          to { transform: scale(4); opacity: 0; }
+        }
+        .scanning-line {
+          animation: scan 4s linear infinite;
+        }
+        @keyframes scan {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(1000%); }
+        }
+      `}</style>
       
-      <div className="container mx-auto px-4 md:px-8 max-w-5xl relative z-10">
-        <div className="hud-text text-xs text-muted border border-line inline-block px-3 py-1 bg-bg mb-12">
-          INTERACTIVE PROTOCOL: LOGISTICS STRESS TEST
+      <div className="container mx-auto px-4 md:px-8 max-w-6xl relative z-10">
+        
+        {/* HUD Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 border-b border-line/50 pb-8">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-2 h-2 rounded-full bg-blinkit animate-pulse shadow-[0_0_10px_#F8CB46]"></div>
+              <span className="hud-text text-blinkit tracking-widest text-[10px]">INTERACTIVE PROTOCOL: LOGISTICS STRESS TEST</span>
+            </div>
+            <h2 className="font-display text-5xl md:text-7xl font-bold tracking-tight text-ink">
+              The 10-Minute<br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blinkit to-white">Matrix</span>
+            </h2>
+          </div>
+          <div className="max-w-md text-muted font-mono text-sm leading-relaxed glass p-6 border border-line/30 rounded-xl relative overflow-hidden">
+            <div className="absolute right-0 top-0 w-16 h-16 bg-blinkit/10 blur-[30px]"></div>
+            <Activity className="absolute right-4 top-4 text-line opacity-30" size={48} />
+            Quick-commerce is a brutal optimization problem. Orders spawn rapidly. You have mere seconds to fulfill them before systemic friction permanently overloads the network grid.
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Left: Instructions & Stats */}
-          <div className="lg:col-span-1 flex flex-col justify-center space-y-8">
-            <div>
-              <h2 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-                The 10-Minute <br/>Matrix
-              </h2>
-              <p className="font-mono text-sm text-muted leading-relaxed">
-                Quick-commerce is a brutal optimization problem. Orders spawn rapidly. You have seconds to fulfill them before systemic friction overloads the network.
-              </p>
-            </div>
-
-            <div className="space-y-6 border border-line bg-bg p-6">
-              <div>
-                <div className="flex justify-between font-mono text-xs mb-2">
-                  <span className="text-muted">ORDERS FULFILLED</span>
-                  <span className="text-blinkit font-bold">{score}</span>
-                </div>
-                <div className="h-2 bg-line overflow-hidden">
-                  <div className="h-full bg-blinkit transition-all" style={{ width: `${Math.min(100, score * 2)}%` }}></div>
+          {/* Left: Telemetry & Controls */}
+          <div className="lg:col-span-4 flex flex-col justify-center space-y-8 glass p-8 border border-line/50 rounded-2xl relative shadow-2xl">
+            <div className="absolute top-0 left-4 w-12 h-[2px] bg-blinkit"></div>
+            
+            <div className="space-y-8">
+              {/* Score HUD */}
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-blinkit/20 to-transparent blur-lg opacity-50"></div>
+                <div className="relative flex flex-col pb-4 border-b border-line/50">
+                  <div className="flex justify-between items-center font-mono text-xs mb-3 uppercase tracking-widest text-muted">
+                    <span className="flex items-center gap-2"><Package size={14} className="text-blinkit"/> Orders Fulfilled</span>
+                    <span className="text-blinkit font-bold text-lg bg-blinkit/10 px-2 rounded border border-blinkit/30">{score}</span>
+                  </div>
+                  <div className="h-2 w-full bg-surface rounded-full overflow-hidden border border-line/50">
+                    <motion.div 
+                      className="h-full bg-blinkit shadow-[0_0_10px_#F8CB46]" 
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${Math.min(100, score * 2)}%` }}
+                      transition={{ type: "spring", bounce: 0, duration: 0.5 }}
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <div className="flex justify-between font-mono text-xs mb-2">
-                  <span className="text-muted">SYSTEM FRICTION</span>
-                  <span className="text-zomato font-bold">{Math.floor(friction)}%</span>
-                </div>
-                <div className="h-2 bg-line overflow-hidden">
-                  <div className="h-full bg-zomato transition-all" style={{ width: `${friction}%` }}></div>
+              {/* Friction HUD */}
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-to-r from-zomato/20 to-transparent blur-lg opacity-50"></div>
+                <div className="relative flex flex-col">
+                  <div className="flex justify-between items-center font-mono text-xs mb-3 uppercase tracking-widest text-muted">
+                    <span className="flex items-center gap-2"><AlertTriangle size={14} className="text-zomato"/> System Friction</span>
+                    <span className="text-zomato font-bold text-lg bg-zomato/10 px-2 rounded border border-zomato/30">{Math.floor(friction)}%</span>
+                  </div>
+                  <div className="h-2 w-full bg-surface rounded-full overflow-hidden border border-line/50">
+                    <motion.div 
+                      className="h-full bg-zomato shadow-[0_0_10px_#E23744]" 
+                      initial={{ width: "0%" }}
+                      animate={{ width: `${friction}%` }}
+                      transition={{ ease: "linear", duration: 0.2 }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -223,55 +280,79 @@ export default function DeliveryMatrixGame() {
                   stateRef.current = { score: 0, friction: 0, orders: [] };
                   startGame();
                 }}
-                className="w-full py-4 bg-blinkit text-black font-bold uppercase tracking-widest hover:bg-yellow-400 transition-colors font-mono text-sm"
+                className="mt-8 w-full py-5 bg-surface border border-blinkit hover:bg-blinkit text-blinkit hover:text-black font-bold uppercase tracking-[0.2em] transition-all duration-300 font-mono text-sm relative overflow-hidden group shadow-[0_0_15px_rgba(248,203,70,0.1)] hover:shadow-[0_0_30px_rgba(248,203,70,0.4)]"
               >
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[scan_1.5s_ease-in-out_infinite] skew-x-12"></div>
                 Initiate Stress Test
               </button>
             )}
+            {gameState === 'playing' && (
+               <div className="mt-8 text-center border border-blinkit/20 bg-blinkit/5 py-4 font-mono text-xs text-blinkit animate-pulse flex items-center justify-center gap-2 tracking-widest">
+                 <Activity size={16} /> SYSTEM ACTIVE
+               </div>
+            )}
           </div>
 
-          {/* Right: The Game Grid */}
-          <div className="lg:col-span-2 relative">
-            <div className="aspect-square md:aspect-[4/3] w-full border border-line bg-bg relative p-4 md:p-8">
+          {/* Right: The Game Grid (Radar Scope) */}
+          <div className="lg:col-span-8 relative flex justify-center lg:justify-end">
+            <div className="aspect-square w-full sm:w-[500px] border border-line/50 bg-black/40 relative p-4 backdrop-blur-md rounded-xl shadow-2xl overflow-hidden glass">
               
-              {/* Grid Background Lines */}
-              <div className="absolute inset-0 grid grid-cols-6 grid-rows-6 opacity-20 pointer-events-none">
+              {/* Radar Crosshairs */}
+              <div className="absolute top-1/2 left-0 w-full h-[1px] bg-line/50 pointer-events-none"></div>
+              <div className="absolute left-1/2 top-0 w-[1px] h-full bg-line/50 pointer-events-none"></div>
+              <div className="absolute inset-0 border-[40px] border-surface/30 rounded-full mix-blend-overlay pointer-events-none pointer-events-none"></div>
+              <div className="absolute inset-0 w-full h-[2px] bg-gradient-to-r from-transparent via-blinkit/50 to-transparent scanning-line pointer-events-none"></div>
+
+              {/* Grid Background */}
+              <div className="absolute inset-0 grid grid-cols-6 grid-rows-6 opacity-20 pointer-events-none p-4 gap-2">
                 {Array.from({length: 36}).map((_, i) => (
-                  <div key={i} className="border border-line"></div>
+                  <div key={i} className="border border-line rounded bg-surface/50"></div>
                 ))}
               </div>
 
               {/* The Playable Area */}
-              <div className="relative w-full h-full grid grid-cols-6 grid-rows-6 gap-2 md:gap-4 z-10">
+              <div className="relative w-full h-full grid grid-cols-6 grid-rows-6 gap-2 z-10">
                 {Array.from({length: 36}).map((_, i) => {
                   const order = orders.find(o => o.cellId === i);
+                  const isCritical = order && order.timeLeft < 30;
                   return (
                     <div key={i} className="relative w-full h-full flex items-center justify-center">
                       <AnimatePresence>
                         {order && (
                           <motion.button
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
+                            initial={{ scale: 0, rotate: -45 }}
+                            animate={{ scale: 1, rotate: 0 }}
                             exit={{ scale: 0, opacity: 0 }}
-                            onClick={() => handleOrderClick(order.id)}
-                            className="absolute inset-0 w-full h-full bg-surface border-2 flex items-center justify-center cursor-crosshair group overflow-hidden"
+                            onClick={(e) => handleOrderClick(order.id, e)}
+                            className={`absolute inset-0 w-full h-full border rounded flex items-center justify-center cursor-crosshair group overflow-hidden transition-colors ${isCritical ? 'bg-zomato/10 border-zomato/50' : 'bg-surface border-line hover:border-blinkit/50'}`}
                             style={{
-                              borderColor: order.timeLeft > 50 ? 'var(--color-blinkit)' : 'var(--color-zomato)',
-                              boxShadow: order.timeLeft > 50 ? '0 0 15px rgba(248,203,70,0.2)' : '0 0 15px rgba(226,55,68,0.4)',
+                              boxShadow: isCritical ? '0 0 20px rgba(226,55,68,0.3) inset' : 'none',
                             }}
                           >
-                            {/* Shrinking background to represent time */}
+                            {/* Radial time indicator */}
                             <div 
-                              className="absolute bottom-0 left-0 w-full opacity-20 transition-all duration-75"
+                              className="absolute bottom-0 left-0 w-full opacity-30 transition-all duration-75"
                               style={{ 
                                 height: `${(order.timeLeft / order.maxTime) * 100}%`,
-                                backgroundColor: order.timeLeft > 50 ? 'var(--color-blinkit)' : 'var(--color-zomato)'
+                                backgroundColor: isCritical ? 'var(--color-zomato)' : 'var(--color-blinkit)'
                               }}
                             ></div>
-                            <span className="font-mono text-xs md:text-sm font-bold relative z-10 group-hover:scale-110 transition-transform"
-                                  style={{ color: order.timeLeft > 50 ? 'var(--color-blinkit)' : 'var(--color-zomato)' }}>
-                              {Math.ceil(order.timeLeft / 10)}s
-                            </span>
+                            
+                            {/* Icon overlay */}
+                            <div className="relative z-10 flex flex-col items-center justify-center pointer-events-none">
+                              {isCritical ? (
+                                <ShieldAlert size={20} className="text-zomato group-hover:scale-110 transition-transform animate-pulse"/>
+                              ) : (
+                                <Box size={20} className="text-muted group-hover:text-blinkit group-hover:scale-110 transition-all"/>
+                              )}
+                              <span className={`font-mono text-[10px] sm:text-xs font-bold mt-1 tracking-tighter ${isCritical ? 'text-zomato' : 'text-inka/80'}`}>
+                                {Math.ceil(order.timeLeft / 10)}s
+                              </span>
+                            </div>
+
+                            {/* Corner brackets for aesthetic */}
+                            <div className="absolute top-1 left-1 w-2 h-2 border-t border-l border-white/20"></div>
+                            <div className="absolute bottom-1 right-1 w-2 h-2 border-b border-r border-white/20"></div>
                           </motion.button>
                         )}
                       </AnimatePresence>
@@ -284,27 +365,29 @@ export default function DeliveryMatrixGame() {
               <AnimatePresence>
                 {gameState === 'gameover' && (
                   <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="absolute inset-0 z-20 bg-bg/90 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center border border-zomato"
+                    initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+                    animate={{ opacity: 1, backdropFilter: "blur(10px)" }}
+                    exit={{ opacity: 0 }}
+                    className="absolute inset-0 z-50 bg-black/80 flex flex-col items-center justify-center p-8 text-center border-2 border-zomato/50 rounded-xl"
                   >
-                    <div className="hud-text text-zomato text-xl mb-4 animate-pulse">SYSTEM HALTED</div>
-                    <div className="font-display text-6xl font-bold mb-2">{score}</div>
-                    <div className="font-mono text-sm text-muted mb-8">ORDERS FULFILLED BEFORE FAILURE</div>
+                    <Crosshair size={48} className="text-zomato mb-6 animate-[spin_4s_linear_infinite] opacity-50" />
                     
-                    <div className="border-t border-b border-line py-6 mb-8 max-w-md">
-                      <p className="font-mono text-sm italic text-ink/80">
-                        "The market doesn't care about your effort, only your execution. If you can't handle the velocity, someone else will."
-                      </p>
-                    </div>
+                    <div className="hud-text text-zomato text-xl mb-4 animate-[pulse_0.5s_infinite] tracking-widest bg-zomato/20 px-4 py-1 rounded">CRITICAL NETWORK FAILURE</div>
+                    <div className="font-display text-7xl font-bold mb-2 text-white glow-effect">{score}</div>
+                    <div className="font-mono text-sm text-zomato/80 mb-8 border-b border-zomato/30 pb-4">ORDERS FULFILLED BEFORE MELTDOWN</div>
+                    
+                    <p className="font-mono text-xs md:text-sm text-muted/80 max-w-sm mb-8 leading-relaxed">
+                      "The market doesn't care about your effort, only your execution.<br/>If you can't handle the velocity, someone else will."
+                    </p>
 
                     <button 
                       onClick={() => {
                         stateRef.current = { score: 0, friction: 0, orders: [] };
                         startGame();
                       }}
-                      className="px-8 py-3 bg-surface border border-line hover:border-blinkit hover:text-blinkit transition-colors font-mono text-sm uppercase tracking-widest"
+                      className="px-8 py-3 bg-zomato/10 border border-zomato hover:bg-zomato text-zomato hover:text-white transition-all font-mono text-sm uppercase tracking-[0.3em] group relative overflow-hidden"
                     >
+                      <div className="absolute inset-0 w-full h-full bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-500 skew-x-12"></div>
                       Reboot System
                     </button>
                   </motion.div>
