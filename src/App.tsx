@@ -11,6 +11,7 @@ import FrontierSection from './components/FrontierSection'
 import EasterEggs from './components/EasterEggs'
 import ScrollProgressBar from './components/ScrollProgressBar'
 import CustomCursor from './components/CustomCursor'
+import AmbientSound from './components/AmbientSound'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
       <CustomCursor />
       <ScrollProgressBar />
       <EasterEggs />
+      <AmbientSound />
 
       <div id="hero">
         <HeroSection />
