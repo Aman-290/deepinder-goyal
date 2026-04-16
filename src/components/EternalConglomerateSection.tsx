@@ -1,6 +1,6 @@
-import { lazy, Suspense, useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-const EternalConstellation = lazy(() => import('./EternalConstellation'));
+import EternalConstellation from './EternalConstellation';
 
 const pillars = [
   {
@@ -53,20 +53,18 @@ export default function EternalConglomerateSection() {
           PHASE 2: THE ETERNAL CONGLOMERATE
         </div>
 
-        <Suspense fallback={<div className="h-[400px] flex items-center justify-center text-muted/30 hud-text">LOADING CONSTELLATION...</div>}>
-          <EternalConstellation activePillar={activePillar.name} onPillarClick={(name) => {
-            const found = pillars.find((p) => p.name === name);
-            if (found) {
-              if ((document as any).startViewTransition) {
-                (document as any).startViewTransition(() => {
-                  setActivePillar(found);
-                });
-              } else {
+        <EternalConstellation activePillar={activePillar.name} onPillarClick={(name) => {
+          const found = pillars.find((p) => p.name === name);
+          if (found) {
+            if ((document as any).startViewTransition) {
+              (document as any).startViewTransition(() => {
                 setActivePillar(found);
-              }
+              });
+            } else {
+              setActivePillar(found);
             }
-          }} />
-        </Suspense>
+          }
+        }} />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 flex-grow items-center">
           {/* Left: Interactive Pillars */}

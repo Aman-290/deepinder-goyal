@@ -157,7 +157,7 @@ export default function HeroSection() {
   const SPLINE_SCENE_URL = '';
 
   return (
-    <section ref={containerRef} className="relative h-[200vh]">
+    <section ref={containerRef} className="relative h-[120vh]">
       <div className="sticky top-0 h-screen overflow-hidden">
         {SPLINE_SCENE_URL && !splineError ? (
           <Suspense fallback={<CanvasFallback progress={progress} />}>

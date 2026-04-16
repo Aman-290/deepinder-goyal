@@ -74,8 +74,8 @@ export default function SystemLogTimeline() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-24 md:py-40 px-4">
-      <div className="text-center mb-20">
+    <section ref={sectionRef} className="relative py-16 md:py-24 px-4">
+      <div className="text-center mb-12">
         <span className="hud-text text-zomato border border-zomato/30 px-3 py-1 inline-flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-zomato" />
           SYSTEM LOG: EVOLUTIONARY ARCS
@@ -100,7 +100,7 @@ export default function SystemLogTimeline() {
           </defs>
         </svg>
 
-        <div className="relative space-y-16 md:space-y-24">
+        <div className="relative space-y-10 md:space-y-14">
           {LOG_ENTRIES.map((entry, i) => {
             const isLeft = i % 2 === 0;
             const Icon = entry.icon;
