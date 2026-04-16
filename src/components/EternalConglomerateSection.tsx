@@ -56,7 +56,15 @@ export default function EternalConglomerateSection() {
         <Suspense fallback={<div className="h-[400px] flex items-center justify-center text-muted/30 hud-text">LOADING CONSTELLATION...</div>}>
           <EternalConstellation activePillar={activePillar.name} onPillarClick={(name) => {
             const found = pillars.find((p) => p.name === name);
-            if (found) setActivePillar(found);
+            if (found) {
+              if ((document as any).startViewTransition) {
+                (document as any).startViewTransition(() => {
+                  setActivePillar(found);
+                });
+              } else {
+                setActivePillar(found);
+              }
+            }
           }} />
         </Suspense>
 
@@ -68,7 +76,15 @@ export default function EternalConglomerateSection() {
                 key={pillar.id}
                 className="border border-line p-6 md:p-8 cursor-pointer relative overflow-hidden group bg-surface/50 backdrop-blur-sm"
                 onHoverStart={() => setActivePillar(pillar)}
-                onClick={() => setActivePillar(pillar)}
+                onClick={() => {
+                  if ((document as any).startViewTransition) {
+                    (document as any).startViewTransition(() => {
+                      setActivePillar(pillar);
+                    });
+                  } else {
+                    setActivePillar(pillar);
+                  }
+                }}
                 whileHover={{ scale: 1.02, x: 10 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
@@ -98,6 +114,7 @@ export default function EternalConglomerateSection() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="border border-line p-8 md:p-16 relative bg-surface shadow-2xl h-full flex flex-col justify-center"
+                style={{ viewTransitionName: 'pillar-data' }}
               >
                 <div 
                   className="absolute top-0 left-0 w-full h-2"

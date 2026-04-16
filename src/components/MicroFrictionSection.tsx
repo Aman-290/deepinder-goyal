@@ -123,6 +123,7 @@ export default function MicroFrictionSection() {
                   src="/foodiebay-menus.png"
                   alt="Foodiebay interface"
                   className="w-full h-auto"
+                  loading="lazy"
                   onError={(e) => { e.currentTarget.style.display = 'none'; }}
                 />
                 <div

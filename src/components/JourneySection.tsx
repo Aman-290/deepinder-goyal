@@ -53,6 +53,7 @@ export default function JourneySection() {
             src="/iit-delhi-campus.png"
             alt="IIT Delhi Campus"
             className="journey-bg-img w-full h-full object-cover scale-100"
+            loading="lazy"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/60 to-transparent" />
@@ -84,6 +85,7 @@ export default function JourneySection() {
             src="/deepinder-early-days.png"
             alt="Deepinder Goyal early days"
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000"
+            loading="lazy"
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="absolute inset-0 bg-gradient-to-r from-bg/40 to-transparent" />

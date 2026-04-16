@@ -59,7 +59,7 @@ export default function FrontierSection() {
             </p>
             
             <div className="relative w-full aspect-video rounded-2xl border border-blue-500/20 flex items-center justify-center overflow-hidden mb-8 group-hover:border-blue-400/50 transition-colors shadow-inner z-10 bg-bg">
-              <img src="lat-aerospace-ustol.png" alt="LAT Aerospace" className="w-full h-full object-cover opacity-60 mix-blend-luminosity grayscale group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-1000" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <img src="lat-aerospace-ustol.png" alt="LAT Aerospace" className="w-full h-full object-cover opacity-60 mix-blend-luminosity grayscale group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-1000" loading="lazy" onError={(e) => e.currentTarget.style.display = 'none'} />
               <div className="absolute inset-0 bg-blue-900/40 mix-blend-overlay group-hover:bg-blue-500/20 transition-colors duration-1000 pointer-events-none"></div>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.8)_100%)] pointer-events-none"></div>
             </div>
