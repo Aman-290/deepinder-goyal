@@ -139,7 +139,7 @@ export default function EasterEggs() {
       {/* Billboard Modal (Draggable) */}
       <AnimatePresence>
         {showBillboard && (
-          <motion.div 
+          <motion.div
             drag
             dragConstraints={{ left: 0, right: window.innerWidth - 400, top: 0, bottom: window.innerHeight - 300 }}
             initial={{ opacity: 0, scale: 0.9, x: 100, y: 100 }}
@@ -173,6 +173,22 @@ export default function EasterEggs() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* 9-digit easter egg */}
+      <div className="fixed bottom-4 left-4 z-50 group">
+        <span className="hud-text text-muted/20 text-[10px] cursor-pointer hover:text-muted/60 transition-colors">
+          USR_COUNT: 24,000,00+
+        </span>
+        <div className="absolute bottom-full left-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+          <div className="glass rounded-lg px-4 py-3 max-w-xs">
+            <p className="text-xs text-ink mb-1">You caught that missing digit.</p>
+            <p className="text-[10px] text-muted">
+              Deepinder once caught a 9-digit phone number on Shark Tank.
+              He'd be proud of your attention to detail.
+            </p>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
