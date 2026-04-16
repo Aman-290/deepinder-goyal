@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BrainCircuit, Quote, Repeat, ArrowRight } from 'lucide-react';
+import RubberBand from './RubberBand';
 
 const flashcards = [
   {
@@ -133,6 +134,10 @@ export default function FounderFlashcards() {
               );
             })}
           </AnimatePresence>
+        </div>
+
+        <div className="flex justify-center mt-8">
+          <RubberBand onSnap={moveToEnd} />
         </div>
 
       </div>
