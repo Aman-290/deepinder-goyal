@@ -101,3 +101,53 @@ body {
 .glow-effect {
   box-shadow: 0 0 30px rgba(226, 55, 68, 0.15);
 }
+
+/* Custom cursor */
+@media (pointer: fine) {
+  .custom-cursor-active {
+    cursor: none !important;
+  }
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+.cursor-dot {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #E23744;
+  transform: translate(-50%, -50%);
+  transition: width 0.2s, height 0.2s, background 0.3s;
+  mix-blend-mode: difference;
+}
+
+.cursor-dot.hovering {
+  width: 32px;
+  height: 32px;
+  background: rgba(226, 55, 68, 0.3);
+  border: 1px solid rgba(226, 55, 68, 0.6);
+}
+
+.cursor-dot.crosshair {
+  width: 2px;
+  height: 20px;
+  border-radius: 0;
+  background: rgba(226, 55, 68, 0.5);
+  box-shadow: -9px 9px 0 -8px rgba(226,55,68,0.5),
+              9px -9px 0 -8px rgba(226,55,68,0.5),
+              -9px -9px 0 -8px transparent,
+              9px 9px 0 -8px transparent;
+}
+
+.cursor-dot.glow {
+  width: 16px;
+  height: 16px;
+  background: rgba(138, 43, 226, 0.4);
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+}
