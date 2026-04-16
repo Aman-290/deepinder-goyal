@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
 import { ShieldAlert, TerminalSquare, AlertOctagon, Unlock, CheckCircle2, Flame } from 'lucide-react';
+import DeliveryRiderDay from './DeliveryRiderDay';
 
 export default function CrucibleSection() {
   const [acknowledged, setAcknowledged] = useState(false);
@@ -167,14 +168,15 @@ export default function CrucibleSection() {
         {/* Global Dark overlay to focus attention if unacknowledged */}
         <AnimatePresence>
           {!acknowledged && (
-            <motion.div 
+            <motion.div
               exit={{ opacity: 0 }}
               className="absolute inset-0 z-0 pointer-events-none bg-black/50 backdrop-blur-[2px] transition-all duration-1000"
             ></motion.div>
           )}
         </AnimatePresence>
-        
+
       </div>
+      <DeliveryRiderDay />
     </div>
   );
 }
