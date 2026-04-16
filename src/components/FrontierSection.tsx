@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { Rocket, Brain, ChevronRight } from 'lucide-react';
+import GravityBrainViz from './GravityBrainViz';
 
 export default function FrontierSection() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,7 +92,7 @@ export default function FrontierSection() {
             </p>
             
             <div className="relative w-full aspect-video rounded-2xl border border-purple-500/20 flex items-center justify-center overflow-hidden mb-8 group-hover:border-purple-400/50 transition-colors shadow-inner z-10 bg-bg">
-              <img src="continue-research-brain.png" alt="Continue Research" className="w-full h-full object-cover opacity-60 mix-blend-luminosity grayscale group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-1000" onError={(e) => e.currentTarget.style.display = 'none'} />
+              <GravityBrainViz />
               <div className="absolute inset-0 bg-purple-900/40 mix-blend-overlay group-hover:bg-purple-500/20 transition-colors duration-1000 pointer-events-none"></div>
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.8)_100%)] pointer-events-none"></div>
             </div>
