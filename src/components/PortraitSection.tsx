@@ -7,87 +7,70 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function PortraitSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const flipContainerRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
-  const imgRef = useRef<HTMLImageElement>(null);
   const lineLeftRef = useRef<HTMLDivElement>(null);
   const lineRightRef = useRef<HTMLDivElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || !flipContainerRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Name reveal — characters animate in
+      
+      // 3D Flip animation based on scroll progress
+      const flipTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top top',
+          end: '+=800', // 800px of scrolling to complete the flip
+          pin: true,    // Pin the section while flipping
+          scrub: 1,     // Smooth scrubbing
+        }
+      });
+
+      flipTl.to(flipContainerRef.current, {
+        rotateX: 180,
+        ease: 'none',
+        duration: 1
+      });
+
+      // Name reveal characters pop in slightly as the back face is revealed
       if (nameRef.current) {
         const chars = nameRef.current.querySelectorAll('.char');
-        gsap.from(chars, {
-          y: 80,
+        flipTl.from(chars, {
+          z: -100,
           opacity: 0,
-          rotateX: -90,
-          stagger: 0.04,
-          duration: 1,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 60%',
-            toggleActions: 'play none none reverse',
-          },
-        });
+          stagger: 0.05,
+          duration: 0.5,
+          ease: 'power2.out',
+        }, 0.5); // Starts halfway through the flip
       }
 
-      // Image parallax
-      if (imgRef.current) {
-        gsap.to(imgRef.current, {
-          yPercent: -10,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
-        });
-      }
-
-      // Horizontal lines expand outward
-      gsap.from(lineLeftRef.current, {
+      // Horizontal lines expand outward after flip
+      flipTl.from(lineLeftRef.current, {
         scaleX: 0,
         transformOrigin: 'right center',
-        duration: 1.2,
+        duration: 0.3,
         ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 55%',
-          toggleActions: 'play none none reverse',
-        },
-      });
-      gsap.from(lineRightRef.current, {
+      }, 0.8);
+      flipTl.from(lineRightRef.current, {
         scaleX: 0,
         transformOrigin: 'left center',
-        duration: 1.2,
+        duration: 0.3,
         ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 55%',
-          toggleActions: 'play none none reverse',
-        },
-      });
+      }, 0.8);
 
       // Meta text fades up
       if (metaRef.current) {
-        gsap.from(metaRef.current.children, {
-          y: 30,
+        flipTl.from(metaRef.current.children, {
+          y: 20,
           opacity: 0,
-          stagger: 0.12,
-          duration: 0.8,
+          stagger: 0.1,
+          duration: 0.4,
           ease: 'power3.out',
-          scrollTrigger: {
-            trigger: metaRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none reverse',
-          },
-        });
+        }, 0.7);
       }
     }, sectionRef);
 
@@ -100,86 +83,116 @@ export default function PortraitSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex flex-col items-center justify-center py-12 md:py-16 overflow-hidden"
+      className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden bg-bg"
     >
       {/* Subtle radial glow behind the text */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div
-          className="w-[800px] h-[400px]"
+          className="w-[800px] h-[400px] opacity-50"
           style={{
-            background: 'radial-gradient(ellipse, rgba(226,55,68,0.06) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse, rgba(226,55,68,0.15) 0%, transparent 70%)',
           }}
         />
       </div>
 
-      {/* Portrait image — shown if available */}
-      {imageLoaded && (
-        <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden mb-6 border border-white/10">
-          <img
-            ref={imgRef}
-            src="/deepinder-hero-portrait.png"
-            alt="Deepinder Goyal"
-            className="w-full h-[120%] object-cover object-top"
-          />
-        </div>
-      )}
-
       {/* Hidden image loader */}
       <img
-        src="/deepinder-hero-portrait.png"
+        src="/deepinder-portrait-hq.jpg"
         alt=""
         className="hidden"
         onLoad={() => setImageLoaded(true)}
         onError={() => setImageLoaded(false)}
       />
 
-      {/* Main name display — always shown, smaller when image is present */}
-      <div className="relative text-center">
-        <h2
-          ref={nameRef}
-          className="font-display font-bold tracking-tight leading-none select-none"
+      {/* 3D Flip Container */}
+      <div 
+        className="relative w-full max-w-5xl aspect-[16/9] md:aspect-[21/9] perspective-[1500px]"
+      >
+        <div 
+          ref={flipContainerRef} 
+          className="w-full h-full relative" 
+          style={{ transformStyle: 'preserve-3d' }}
         >
-          <span
-            className={`block ${imageLoaded ? 'text-4xl md:text-6xl lg:text-7xl' : 'text-6xl md:text-8xl lg:text-[10rem]'} text-white/90`}
-            style={{ perspective: '600px' }}
+          {/* Front Face: The Image */}
+          <div 
+            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center rounded-2xl overflow-hidden glass border border-line shadow-2xl backface-hidden"
+            style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
           >
-            {firstName.split('').map((char, i) => (
-              <span key={i} className="char inline-block" style={{ transformStyle: 'preserve-3d' }}>
-                {char}
-              </span>
-            ))}
-          </span>
-          <span
-            className={`block ${imageLoaded ? 'text-5xl md:text-7xl lg:text-8xl' : 'text-7xl md:text-9xl lg:text-[12rem]'} text-gradient mt-[-0.1em]`}
-            style={{ perspective: '600px' }}
+            {imageLoaded ? (
+              <img
+                src="/deepinder-portrait-hq.jpg"
+                alt="Deepinder Goyal Portrait"
+                className="w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-1000"
+              />
+            ) : (
+               <div className="w-full h-full bg-surface/50 border border-line flex items-center justify-center">
+                 <span className="hud-text text-muted animate-pulse">LOADING_PORTRAIT.IMG...</span>
+               </div>
+            )}
+            {/* Overlay gradient for cinematic effect on the image */}
+            <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-80 pointer-events-none"></div>
+          </div>
+
+          {/* Back Face: The Typography */}
+          <div 
+            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center backface-hidden"
+            style={{ 
+              transform: 'rotateX(180deg)', 
+              backfaceVisibility: 'hidden', 
+              WebkitBackfaceVisibility: 'hidden' 
+            }}
           >
-            {lastName.split('').map((char, i) => (
-              <span key={i} className="char inline-block" style={{ transformStyle: 'preserve-3d' }}>
-                {char}
-              </span>
-            ))}
-          </span>
-        </h2>
-      </div>
+            {/* Main name display */}
+            <div className="relative text-center w-full">
+              <h2
+                ref={nameRef}
+                className="font-display font-bold tracking-tight leading-none select-none flex flex-col items-center justify-center"
+                style={{ transformStyle: 'preserve-3d' }}
+              >
+                <span
+                  className="block text-6xl md:text-8xl lg:text-[9rem] text-white/90"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  {firstName.split('').map((char, i) => (
+                    <span key={`f-${i}`} className="char inline-block" style={{ transformStyle: 'preserve-3d' }}>
+                      {char}
+                    </span>
+                  ))}
+                </span>
+                <span
+                  className="block text-7xl md:text-9xl lg:text-[11rem] text-gradient mt-[-0.1em]"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  {lastName.split('').map((char, i) => (
+                    <span key={`l-${i}`} className="char inline-block" style={{ transformStyle: 'preserve-3d' }}>
+                      {char}
+                    </span>
+                  ))}
+                </span>
+              </h2>
+            </div>
 
-      {/* Decorative lines */}
-      <div className="flex items-center gap-6 mt-6 w-full max-w-3xl px-8">
-        <div ref={lineLeftRef} className="flex-1 h-px bg-gradient-to-l from-zomato/40 to-transparent" />
-        <div className="w-2 h-2 rotate-45 border border-zomato/60" />
-        <div ref={lineRightRef} className="flex-1 h-px bg-gradient-to-r from-zomato/40 to-transparent" />
-      </div>
+            {/* Decorative lines */}
+            <div className="flex items-center gap-6 mt-12 w-full max-w-3xl px-8 relative z-10">
+              <div ref={lineLeftRef} className="flex-1 h-px bg-gradient-to-l from-zomato/40 to-transparent" />
+              <div className="w-2 h-2 rotate-45 border border-zomato/60" />
+              <div ref={lineRightRef} className="flex-1 h-px bg-gradient-to-r from-zomato/40 to-transparent" />
+            </div>
 
-      {/* Meta information */}
-      <div ref={metaRef} className="text-center mt-6 space-y-2">
-        <p className="hud-text text-muted tracking-[0.25em] text-sm">
-          FOUNDER & CEO // ETERNAL LIMITED
-        </p>
-        <p className="hud-text text-muted/30 text-[10px] tracking-[0.35em]">
-          IIT DELHI M.TECH '05 &nbsp;·&nbsp; ZOMATO '08 &nbsp;·&nbsp; NEW DELHI, INDIA
-        </p>
-        <p className="hud-text text-muted/20 text-[10px] tracking-[0.3em] mt-3">
-          28.6139°N &nbsp; 77.2090°E
-        </p>
+            {/* Meta information */}
+            <div ref={metaRef} className="text-center mt-6 space-y-2 relative z-10">
+              <p className="hud-text text-muted tracking-[0.25em] text-sm md:text-base">
+                FOUNDER & CEO // ZOMATO & ETERNAL
+              </p>
+              <p className="hud-text text-muted/40 text-[10px] md:text-xs tracking-[0.35em]">
+                IIT DELHI M.TECH '05 &nbsp;·&nbsp; ZOMATO '08 &nbsp;·&nbsp; NEW DELHI, INDIA
+              </p>
+              <p className="hud-text text-zomato text-[10px] tracking-[0.3em] mt-3 animate-pulse">
+                SCROLL TO CONTINUE SEQUENCE ↓
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
