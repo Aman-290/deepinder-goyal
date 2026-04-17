@@ -39,9 +39,12 @@ export default function PortraitSection() {
       // Name reveal characters pop in slightly as the back face is revealed
       if (nameRef.current) {
         const chars = nameRef.current.querySelectorAll('.char');
-        flipTl.from(chars, {
+        flipTl.fromTo(chars, {
           z: -100,
           opacity: 0,
+        }, {
+          z: 0,
+          opacity: 1,
           stagger: 0.05,
           duration: 0.5,
           ease: 'power2.out',
@@ -49,24 +52,28 @@ export default function PortraitSection() {
       }
 
       // Horizontal lines expand outward after flip
-      flipTl.from(lineLeftRef.current, {
-        scaleX: 0,
-        transformOrigin: 'right center',
+      gsap.set(lineLeftRef.current, { transformOrigin: 'right center' });
+      gsap.set(lineRightRef.current, { transformOrigin: 'left center' });
+
+      flipTl.fromTo(lineLeftRef.current, { scaleX: 0 }, {
+        scaleX: 1,
         duration: 0.3,
         ease: 'power3.out',
       }, 0.8);
-      flipTl.from(lineRightRef.current, {
-        scaleX: 0,
-        transformOrigin: 'left center',
+      flipTl.fromTo(lineRightRef.current, { scaleX: 0 }, {
+        scaleX: 1,
         duration: 0.3,
         ease: 'power3.out',
       }, 0.8);
 
       // Meta text fades up
       if (metaRef.current) {
-        flipTl.from(metaRef.current.children, {
+        flipTl.fromTo(metaRef.current.children, {
           y: 20,
           opacity: 0,
+        }, {
+          y: 0,
+          opacity: 1,
           stagger: 0.1,
           duration: 0.4,
           ease: 'power3.out',
@@ -97,16 +104,16 @@ export default function PortraitSection() {
 
       {/* Hidden image loader */}
       <img
-        src="/deepinder-portrait-hq.jpg"
+        src="/deepinder-hero-portrait.png"
         alt=""
         className="hidden"
         onLoad={() => setImageLoaded(true)}
         onError={() => setImageLoaded(false)}
       />
 
-      {/* 3D Flip Container */}
+      {/* 3D Flip Container (Only Image <-> Text) */}
       <div 
-        className="relative w-full max-w-5xl aspect-[16/9] md:aspect-[21/9] perspective-[1500px]"
+        className="relative w-full max-w-6xl h-[300px] md:h-[400px] flex items-center justify-center perspective-[1500px]"
       >
         <div 
           ref={flipContainerRef} 
@@ -115,27 +122,27 @@ export default function PortraitSection() {
         >
           {/* Front Face: The Image */}
           <div 
-            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center rounded-2xl overflow-hidden glass border border-line shadow-2xl backface-hidden"
+            className="absolute inset-0 flex items-center justify-center backface-hidden"
             style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
           >
-            {imageLoaded ? (
-              <img
-                src="/deepinder-portrait-hq.jpg"
-                alt="Deepinder Goyal Portrait"
-                className="w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-1000"
-              />
-            ) : (
-               <div className="w-full h-full bg-surface/50 border border-line flex items-center justify-center">
-                 <span className="hud-text text-muted animate-pulse">LOADING_PORTRAIT.IMG...</span>
-               </div>
-            )}
-            {/* Overlay gradient for cinematic effect on the image */}
-            <div className="absolute inset-0 bg-gradient-to-t from-bg via-transparent to-transparent opacity-80 pointer-events-none"></div>
+            <div className="w-56 h-56 md:w-80 md:h-80 rounded-full overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(226,55,68,0.1)] relative">
+              {imageLoaded ? (
+                <img
+                  src="/deepinder-hero-portrait.png"
+                  alt="Deepinder Goyal Portrait"
+                  className="w-full h-[120%] object-cover object-top grayscale hover:grayscale-0 transition-all duration-1000"
+                />
+              ) : (
+                <div className="w-full h-full bg-surface/50 border border-line flex items-center justify-center">
+                  <span className="hud-text text-[10px] text-muted animate-pulse">IMG_LOAD...</span>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Back Face: The Typography */}
           <div 
-            className="absolute inset-0 w-full h-full flex flex-col items-center justify-center backface-hidden"
+            className="absolute inset-0 flex flex-col items-center justify-center backface-hidden"
             style={{ 
               transform: 'rotateX(180deg)', 
               backfaceVisibility: 'hidden', 
@@ -171,28 +178,28 @@ export default function PortraitSection() {
                 </span>
               </h2>
             </div>
-
-            {/* Decorative lines */}
-            <div className="flex items-center gap-6 mt-12 w-full max-w-3xl px-8 relative z-10">
-              <div ref={lineLeftRef} className="flex-1 h-px bg-gradient-to-l from-zomato/40 to-transparent" />
-              <div className="w-2 h-2 rotate-45 border border-zomato/60" />
-              <div ref={lineRightRef} className="flex-1 h-px bg-gradient-to-r from-zomato/40 to-transparent" />
-            </div>
-
-            {/* Meta information */}
-            <div ref={metaRef} className="text-center mt-6 space-y-2 relative z-10">
-              <p className="hud-text text-muted tracking-[0.25em] text-sm md:text-base">
-                FOUNDER & CEO // ZOMATO & ETERNAL
-              </p>
-              <p className="hud-text text-muted/40 text-[10px] md:text-xs tracking-[0.35em]">
-                IIT DELHI M.TECH '05 &nbsp;·&nbsp; ZOMATO '08 &nbsp;·&nbsp; NEW DELHI, INDIA
-              </p>
-              <p className="hud-text text-zomato text-[10px] tracking-[0.3em] mt-3 animate-pulse">
-                SCROLL TO CONTINUE SEQUENCE ↓
-              </p>
-            </div>
           </div>
         </div>
+      </div>
+
+      {/* Decorative lines (Stays Fixed) */}
+      <div className="flex items-center gap-6 mt-8 w-full max-w-3xl px-8 relative z-10">
+        <div ref={lineLeftRef} className="flex-1 h-px bg-gradient-to-l from-zomato/40 to-transparent" />
+        <div className="w-2 h-2 rotate-45 border border-zomato/60" />
+        <div ref={lineRightRef} className="flex-1 h-px bg-gradient-to-r from-zomato/40 to-transparent" />
+      </div>
+
+      {/* Meta information (Stays Fixed) */}
+      <div ref={metaRef} className="text-center mt-6 space-y-2 relative z-10">
+        <p className="hud-text text-muted tracking-[0.25em] text-sm md:text-base">
+          FOUNDER & CEO // ZOMATO & ETERNAL
+        </p>
+        <p className="hud-text text-muted/40 text-[10px] md:text-xs tracking-[0.35em]">
+          IIT DELHI M.TECH '05 &nbsp;·&nbsp; ZOMATO '08 &nbsp;·&nbsp; NEW DELHI, INDIA
+        </p>
+        <p className="hud-text text-zomato text-[10px] tracking-[0.3em] mt-3 animate-[pulse_2s_ease-in-out_infinite]">
+          SCROLL TO CONTINUE SEQUENCE ↓
+        </p>
       </div>
     </section>
   );
