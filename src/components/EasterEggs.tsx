@@ -83,9 +83,9 @@ export default function EasterEggs() {
                   {/* Placeholder for car image */}
                   <div className="absolute inset-0 bg-gradient-to-tr from-black/50 to-transparent z-20 pointer-events-none"></div>
                   {activeCar === 'lambo' ? (
-                    <img src="Huracan.jpg" alt="Huracan Sterrato" className="w-full h-full object-cover relative z-10" />
+                    <img src="/sterrato-blue.jpg" alt="Huracan Sterrato" className="w-full h-full object-cover relative z-10" />
                   ) : (
-                    <span className="text-6xl relative z-10">🚙</span>
+                    <img src="/aston-martin.jpg" alt="Aston Martin DB12" className="w-full h-full object-cover relative z-10" />
                   )}
                 </div>
                 

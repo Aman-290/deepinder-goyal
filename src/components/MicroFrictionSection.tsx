@@ -80,43 +80,39 @@ export default function MicroFrictionSection() {
       // Walk phase drives the leg animation via scroll progress
       const walkProxy = { phase: 0 };
       gsap.to(walkProxy, {
-        phase: 1,
+        phase: 4, // Increase phase for more steps
         ease: 'none',
         scrollTrigger: {
           trigger: containerRef.current,
           start: 'top top',
-          end: () => '+=' + (scrollWidth * 0.6),
+          end: () => '+=' + scrollWidth,
           scrub: true,
           onUpdate: () => setWalkPhase(walkProxy.phase),
         },
       });
 
-      // People walk forward (translate left) then fade out as they "leave the queue"
+      // People walk forward then fade out as they "leave the queue"
       const people = containerRef.current!.querySelectorAll('.queue-person');
-      people.forEach((person, i) => {
-        const tl = gsap.timeline({
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top top',
-            end: () => '+=' + (scrollWidth * 0.6),
-            scrub: true,
-          },
-        });
+      const qTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top top',
+          end: () => '+=' + (scrollWidth * 0.8),
+          scrub: true,
+        },
+      });
 
-        // Each person walks forward (to the left) at staggered timing
-        tl.to(person, {
-          x: -(80 + i * 30),
-          duration: 0.6,
-          delay: i * 0.08,
-          ease: 'power1.inOut',
-        })
-        // Then fades out as they walk off
-        .to(person, {
+      people.forEach((person, i) => {
+        // Each person walks off-screen (up and right to exit queue)
+        qTl.to(person, {
+          y: -50 - (i * 20),
+          x: 100 + (i * 40),
           opacity: 0,
-          y: -20,
-          duration: 0.4,
-          ease: 'power2.in',
-        }, '>-0.15');
+          scale: 1.2,
+          rotation: (i % 2 === 0 ? 10 : -10),
+          duration: 1,
+          ease: 'power2.inOut',
+        }, i * 0.2); // Stagger start times
       });
     }, containerRef);
 

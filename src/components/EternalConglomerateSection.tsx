@@ -49,30 +49,37 @@ export default function EternalConglomerateSection() {
       <div className="absolute inset-0 transition-colors duration-1000 opacity-5" style={{ backgroundColor: activePillar.color }}></div>
       
       <div className="container mx-auto px-4 md:px-8 max-w-7xl relative z-10 flex-grow flex flex-col">
-        <div className="hud-text text-xs text-muted mb-16 border border-line inline-block px-3 py-1 self-start bg-surface/80">
+        <div className="hud-text text-xs text-muted mb-8 border border-line inline-block px-3 py-1 self-start bg-surface/80">
           PHASE 2: THE ETERNAL CONGLOMERATE
         </div>
 
-        <EternalConstellation activePillar={activePillar.name} onPillarClick={(name) => {
-          const found = pillars.find((p) => p.name === name);
-          if (found) {
-            if ((document as any).startViewTransition) {
-              (document as any).startViewTransition(() => {
-                setActivePillar(found);
-              });
-            } else {
-              setActivePillar(found);
-            }
-          }
-        }} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 flex-grow items-center relative z-10 w-full">
+          {/* Left: The Network Map (Replaced Solar System) */}
+          <div className="lg:col-span-5 h-[400px] lg:h-[600px] relative border border-line bg-surface/50 overflow-hidden">
+            <div className="absolute top-4 left-4 hud-text text-[10px] text-muted/50 z-20">SYS.ECOSYSTEM_MAP</div>
+            <EternalConstellation 
+              activePillar={activePillar.name} 
+              onPillarClick={(name) => {
+                const found = pillars.find((p) => p.name === name);
+                if (found) {
+                  if ((document as any).startViewTransition) {
+                    (document as any).startViewTransition(() => {
+                      setActivePillar(found);
+                    });
+                  } else {
+                    setActivePillar(found);
+                  }
+                }
+              }} 
+            />
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24 flex-grow items-center">
-          {/* Left: Interactive Pillars */}
-          <div className="lg:col-span-5 flex flex-col justify-center gap-6">
+          {/* Middle: Interactive Pillars */}
+          <div className="lg:col-span-3 flex flex-col justify-center gap-4">
             {pillars.map((pillar) => (
               <motion.div
                 key={pillar.id}
-                className="border border-line p-6 md:p-8 cursor-pointer relative overflow-hidden group bg-surface/50 backdrop-blur-sm"
+                className="border border-line p-4 md:p-6 cursor-pointer relative overflow-hidden group bg-surface/50 backdrop-blur-sm"
                 onHoverStart={() => setActivePillar(pillar)}
                 onClick={() => {
                   if ((document as any).startViewTransition) {
@@ -83,7 +90,7 @@ export default function EternalConglomerateSection() {
                     setActivePillar(pillar);
                   }
                 }}
-                whileHover={{ scale: 1.02, x: 10 }}
+                whileHover={{ scale: 1.02, x: 5 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
                 <div 
@@ -91,19 +98,19 @@ export default function EternalConglomerateSection() {
                   style={{ backgroundColor: pillar.color }}
                 ></div>
                 
-                <div className="flex justify-between items-center relative z-10">
-                  <h3 className="font-display text-3xl md:text-4xl font-bold transition-colors duration-300"
+                <div className="flex flex-col gap-2 relative z-10">
+                  <div className="hud-text text-[10px] opacity-70">SYS.NODE.{pillar.id}</div>
+                  <h3 className="font-display text-2xl md:text-3xl font-bold transition-colors duration-300"
                       style={{ color: activePillar.id === pillar.id ? pillar.color : 'var(--color-ink)' }}>
                     {pillar.name}
                   </h3>
-                  <div className="hud-text text-sm opacity-50">SYS.NODE.{pillar.id.toUpperCase()}</div>
                 </div>
               </motion.div>
             ))}
           </div>
 
           {/* Right: Dynamic Data Display */}
-          <div className="lg:col-span-7 flex flex-col justify-center h-full min-h-[600px]">
+          <div className="lg:col-span-4 flex flex-col justify-center h-[500px] lg:h-[600px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activePillar.id}
