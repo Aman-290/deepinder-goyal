@@ -64,10 +64,15 @@ export default function FrontierSection() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.8)_100%)] pointer-events-none"></div>
             </div>
 
-            <div className="flex items-center gap-2 text-blue-400 font-mono text-sm tracking-widest font-bold group/btn cursor-pointer w-max relative z-10 hover:text-blue-300 transition-colors">
+            <a 
+              href="https://www.lat.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-blue-400 font-mono text-sm tracking-widest font-bold group/btn cursor-pointer w-max relative z-10 hover:text-blue-300 transition-colors"
+            >
               EXPLORE PROTOTYPE 
               <ChevronRight size={16} className="group-hover/btn:translate-x-2 transition-transform" />
-            </div>
+            </a>
             
             {/* Soft top border reflection */}
              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-blue-400/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-t-3xl"></div>
@@ -97,10 +102,15 @@ export default function FrontierSection() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.8)_100%)] pointer-events-none"></div>
             </div>
 
-            <div className="flex items-center gap-2 text-purple-400 font-mono text-sm tracking-widest font-bold group/btn cursor-pointer w-max relative z-10 hover:text-purple-300 transition-colors">
+            <a 
+              href="https://www.continue.com/gravity/hypothesis"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-purple-400 font-mono text-sm tracking-widest font-bold group/btn cursor-pointer w-max relative z-10 hover:text-purple-300 transition-colors"
+            >
               VIEW MEDICAL DATA 
               <ChevronRight size={16} className="group-hover/btn:translate-x-2 transition-transform" />
-            </div>
+            </a>
 
             {/* Soft top border reflection */}
              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-purple-400/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 rounded-t-3xl"></div>
