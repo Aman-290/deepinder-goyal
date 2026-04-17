@@ -110,25 +110,36 @@ function CanvasFallback({ progress }: { progress: number }) {
   return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
 }
 
-function useTypingAnimation(text: string, speed = 80) {
+function useTypingAnimation(text: string, speed = 60, startDelay = 500) {
   const [displayed, setDisplayed] = useState('');
   const [done, setDone] = useState(false);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i < text.length) {
-        setDisplayed(text.slice(0, i + 1));
-        i++;
-      } else {
-        setDone(true);
-        clearInterval(interval);
-      }
-    }, speed);
-    return () => clearInterval(interval);
-  }, [text, speed]);
+    let timeout: NodeJS.Timeout;
+    let interval: NodeJS.Timeout;
+    
+    timeout = setTimeout(() => {
+      setStarted(true);
+      let i = 0;
+      interval = setInterval(() => {
+        if (i < text.length) {
+          setDisplayed(text.slice(0, i + 1));
+          i++;
+        } else {
+          setDone(true);
+          clearInterval(interval);
+        }
+      }, speed);
+    }, startDelay);
+    
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, [text, speed, startDelay]);
 
-  return { displayed, done };
+  return { displayed, done, started };
 }
 
 export default function HeroSection() {
@@ -136,7 +147,7 @@ export default function HeroSection() {
   const [progress, setProgress] = useState(0);
   const [splineLoaded, setSplineLoaded] = useState(false);
   const [splineError, setSplineError] = useState(false);
-  const { displayed, done } = useTypingAnimation('DREAM WITHOUT ACTION IS HALLUCINATION.');
+  const { displayed, done, started } = useTypingAnimation('DREAM WITHOUT ACTION IS HALLUCINATION.', 40, 600);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -177,23 +188,37 @@ export default function HeroSection() {
           className="absolute inset-0 flex flex-col items-center justify-center px-4"
           style={{ opacity: Math.max(0, 1 - progress * 2.5) }}
         >
-          <p className="hud-text text-muted mb-6 tracking-[0.3em]">
-            SYSTEMIC ANNIHILATION OF FRICTION
+          <p 
+            className="hud-text text-zomato mb-6 tracking-[0.3em] text-xs md:text-sm font-bold"
+            style={{ 
+              opacity: started ? 1 : 0, 
+              transform: started ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'opacity 0.8s ease-out, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)' 
+            }}
+          >
+            SYS.CORE_DIRECTIVE // DEEPINDER_GOYAL
           </p>
 
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-display font-bold leading-[0.9] text-center max-w-6xl">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[8rem] font-display font-bold leading-[1.1] text-center max-w-6xl text-transparent bg-clip-text bg-gradient-to-br from-white to-white/40 filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
             {displayed}
-            {!done && (
-              <span className="inline-block w-[3px] h-[0.8em] bg-zomato ml-1 animate-pulse" />
+            {(!done || Math.floor(Date.now() / 500) % 2 === 0) && (
+              <span className="inline-block w-[3px] md:w-[6px] h-[0.8em] bg-zomato ml-2 md:ml-4 translate-y-[2px]" />
             )}
           </h1>
 
-          <p
-            className="hud-text text-muted/50 mt-12 tracking-[0.2em]"
-            style={{ opacity: done ? 1 : 0, transition: 'opacity 1s' }}
+          <div
+            className="mt-16 flex flex-col items-center justify-center gap-4"
+            style={{ 
+              opacity: done ? 1 : 0, 
+              transform: done ? 'translateY(0)' : 'translateY(10px)',
+              transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
+            }}
           >
-            SCROLL TO OPTIMIZE →
-          </p>
+            <div className="w-[1px] h-12 bg-gradient-to-b from-zomato/60 to-transparent animate-[pulse_2s_ease-in-out_infinite]" />
+            <p className="hud-text text-muted/60 tracking-[0.2em] text-[10px] uppercase">
+              INITIALIZE SCROLL SEQUENCE
+            </p>
+          </div>
         </div>
 
         <div className="absolute top-4 left-4 hud-text text-muted/30 text-[10px]">
