@@ -103,7 +103,7 @@ export default function FrontierSection() {
             </div>
 
             <a 
-              href="https://www.continue.com/gravity/hypothesis"
+              href="https://www.temple.com/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-purple-400 font-mono text-sm tracking-widest font-bold group/btn cursor-pointer w-max relative z-10 hover:text-purple-300 transition-colors"
